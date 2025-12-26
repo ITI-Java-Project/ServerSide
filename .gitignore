@@ -1,0 +1,38 @@
+# NetBeans specific project files
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+nb-configuration.xml
+nbactions.xml
+
+# Java class files, build artifacts, and temporary files
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.log
+*.lock
+/build/
+
+# Maven-specific (if using Maven)
+/target/
+pom.xml.tag
+pom.xml.next
+pom.xml.bak
+pom.xml.versions
+poms/
+
+# Gradle-specific (if using Gradle)
+.gradle/
+/build/
+
+# Project-specific IDE files (e.g. Eclipse, if multiple IDEs are used)
+.settings/
+.project
+.classpath
+
+# Operating System temporary files
+.DS_Store
+Thumbs.db
