@@ -7,7 +7,7 @@ public class Session {
     private final int id;
     private final int player1_id;
     private final int player2_id;
-    private final int winner_id;
+    public int winner_id;
     public Timestamp startTime , endTime; 
 
     public Session(int id, int player1_id, int player2_id, int winner_id, Timestamp startTime, Timestamp endTime) {
@@ -17,10 +17,6 @@ public class Session {
         this.winner_id = winner_id;
         this.startTime = startTime;
         this.endTime = endTime;
-    }
-
-    public int getWinner_id() {
-        return winner_id;
     }
 
     public int getId() { return id; }
