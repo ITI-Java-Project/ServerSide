@@ -4,7 +4,7 @@
 /dist/
 /nbdist/
 nb-configuration.xml
-nbactions.xml
+
 
 # Java class files, build artifacts, and temporary files
 *.class
