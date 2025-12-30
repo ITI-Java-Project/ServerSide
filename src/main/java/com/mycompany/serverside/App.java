@@ -7,18 +7,27 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import javafx.application.Platform;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.stage.StageStyle;
 
-/**
- * JavaFX App
- */
 public class App extends Application {
 
     private static Scene scene;
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("primary"), 640, 480);
+        scene = new Scene(loadFXML("ServerGui"));
+        scene.getStylesheets().add(getClass().getResource("/style/app.css").toExternalForm());
+        stage.initStyle(StageStyle.UNDECORATED);
         stage.setScene(scene);
+        stage.setFullScreen(true);
+        stage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                Platform.exit();
+            }
+        });
         stage.show();
     }
 
@@ -34,5 +43,4 @@ public class App extends Application {
     public static void main(String[] args) {
         launch();
     }
-
 }
