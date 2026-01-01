@@ -1,5 +1,7 @@
 package com.mycompany.serverside;
 
+import com.mycompany.serverside.dto.Player;
+import data.DbManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -7,6 +9,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -41,6 +45,35 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
-        launch();
+        try {
+            DbManager db = DbManager.init();
+            Player p = new Player(
+                    1,
+                    100,
+                    "Ahmed",
+                    "ahmed@mail.com",
+                    "1234",
+                    "Male"
+            );
+
+            db.insertQueryPrepared(
+                    "INSERT INTO PLAYER (Name, Email, Password, Gender, Score) VALUES (?, ?, ?, ?, ?)",
+                    p.getName(),
+                    p.getEmail(),
+                    p.getPassword(),
+                    p.getGender(),
+                    p.getScore()
+            );
+            ResultSet rs = db
+                    .getQueryPrepared("SELECT * FROM PLAYER");
+
+            while (rs.next()) {
+                System.out.println(rs.getString("id"));
+            }
+            rs.close();
+            launch();
+        } catch (SQLException ex) {
+            System.getLogger(App.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }
 }
