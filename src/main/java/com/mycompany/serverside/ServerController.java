@@ -8,8 +8,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.PieChart;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import network.*;
+import session.SessionManager;
+import services.ServerService;
 
 /**
  * @author hends
@@ -21,12 +25,11 @@ public class ServerController implements Initializable {
     @FXML
     private Button toggleButton;
     
-    private boolean isToggle;
+    private boolean serverRunning = false;
+    private ServerService serverService;
 
  @Override
 public void initialize(URL url, ResourceBundle rb) {
-    isToggle = false;
-
     ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(
         new PieChart.Data("Purple", 5),
         new PieChart.Data("Orange", 15),
@@ -73,17 +76,58 @@ public void initialize(URL url, ResourceBundle rb) {
 
     @FXML
     private void toggleAction(ActionEvent event) {
-        if(!isToggle){
+        if (!serverRunning) {
+            startServer();
+        } else {
+            stopServer();
+        }
+    }
+    
+
+    private void startServer() {
+        try {
+            SessionManager sessionManager = new SessionManager();
+
+            ServerListener listener = new ServerListener(sessionManager);
+
+            serverService = new ServerService(5000, listener);
+            serverService.setDaemon(true);
+            serverService.start();
+
             toggleButton.setText("Stop");
             toggleButton.getStyleClass().remove("start-button");
             toggleButton.getStyleClass().add("stop-button");
-            isToggle = true;
-        }else{
-            toggleButton.setText("Start");
-            toggleButton.getStyleClass().remove("stop-button");
-            toggleButton.getStyleClass().add("start-button");
-            isToggle = false;
+            serverRunning = true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Failed to start server: " + e.getMessage());
         }
-        
+    }
+
+
+    private void stopServer() {
+        if (serverService != null) {
+            try {
+                serverService.shutdown();
+            } catch (Exception e) {
+                e.printStackTrace();
+                showError("Error stopping server: " + e.getMessage());
+            }
+        }
+
+        toggleButton.setText("Start");
+        toggleButton.getStyleClass().remove("stop-button");
+        toggleButton.getStyleClass().add("start-button");
+        serverRunning = false;
+    }
+
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Server Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
