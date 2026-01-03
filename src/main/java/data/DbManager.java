@@ -16,8 +16,7 @@ public class DbManager {
     private DbManager() {
         try {
             DriverManager.registerDriver(new ClientDriver());
-            conn = DriverManager.getConnection(
-                    "jdbc:derby://localhost:1527/tic_tac_toe_database", "root", "root");
+            conn = DriverManager.getConnection("jdbc:derby://localhost:1527/tic_tac_toe_database", "root", "root");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -29,8 +28,6 @@ public class DbManager {
         }
         return dbManager;
     }
-
-
 
     public ResultSet getQuery(String query) {
         try {
@@ -62,8 +59,6 @@ public class DbManager {
             return false;
         }
     }
-
-    
 
     public ResultSet getQueryPrepared(String query, Object... params) {
         try {
