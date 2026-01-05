@@ -98,4 +98,33 @@ public class DbManager {
         }
         return ps;
     }
+    
+    public int insertAndGetId(String query, Object... params) {
+        try {
+            // 1 insert
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
+                for (int i = 0; i < params.length; i++) {
+                    ps.setObject(i + 1, params[i]);
+                }
+                ps.executeUpdate();
+            }
+
+            // 2 get last generated ID (Derby way)
+            try (Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery(
+                         "SELECT IDENTITY_VAL_LOCAL() FROM PLAYER"
+                 )) {
+
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+
 }

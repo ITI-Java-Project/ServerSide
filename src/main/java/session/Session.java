@@ -99,4 +99,8 @@ public class Session {
         x.send(msg);
         o.send(msg);
     }
+    
+    public boolean hasPlayer(ClientHandler client) {
+           return client == x || client == o;
+    }
 }
