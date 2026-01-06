@@ -1,12 +1,6 @@
 package network;
 
-import com.google.gson.Gson;
 import com.mycompany.serverside.dto.*;
-import java.util.List;
-import java.util.Queue;
-import java.util.stream.Collectors;
-import org.apache.derby.client.am.SqlException;
-import session.Session;
 import session.SessionManager;
 
 public class ServerListener implements MessageListener {
@@ -56,7 +50,7 @@ public class ServerListener implements MessageListener {
             }
         } else if (msg.startsWith("REGISTER")) {
             String[] parts = msg.split(" ");
-            if (parts.length == 4) { 
+            if (parts.length == 4) {
                 String username = parts[1];
                 String email = parts[2];
                 String password = parts[3];
@@ -72,33 +66,29 @@ public class ServerListener implements MessageListener {
             } else {
                 client.send("INVALID_REGISTER_FORMAT");
             }
-        }else if (msg.startsWith("LOGIN")) {
+        } else if (msg.startsWith("LOGIN")) {
             String[] parts = msg.split(" ");
-            if (parts.length == 3) { 
+            if (parts.length == 3) {
                 String username = parts[1];
                 String password = parts[2];
 
-                
-                
-                Player    player = PlayerDAO.login(username, password);
-                    if (player != null) {
-                        client.setPlayer(player);
-                        sessionManager.addPlayer(client);
-                        client.send("LOGIN_SUCCESS");
-                    } else {
-                        client.send("LOGIN_FAILED : username or password isn't correct");
-                    }
-                } 
-                
-            } else {
-                client.send("INVALID_LOGIN_FORMAT");
+                Player player = PlayerDAO.login(username, password);
+                if (player != null) {
+                    client.setPlayer(player);
+                    sessionManager.addPlayer(client);
+                    client.send("LOGIN_SUCCESS");
+                } else {
+                    client.send("LOGIN_FAILED : username or password isn't correct");
+                }
             }
+
+        } else {
+            client.send("INVALID_LOGIN_FORMAT");
         }
-
-
     }
+}
 
-    // TODO : IN-Preview (Doesn't work)
+// TODO : IN-Preview (Doesn't work)
     /* 
     public void broadcastAvailablePlayers() {
         Gson gson = new Gson();

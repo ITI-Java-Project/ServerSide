@@ -17,6 +17,7 @@ public class DbManager {
         try {
             DriverManager.registerDriver(new ClientDriver());
             conn = DriverManager.getConnection("jdbc:derby://localhost:1527/tic_tac_toe_database", "root", "root");
+            System.out.println(conn+"..................");
         } catch (SQLException e) {
             e.printStackTrace();
         }
