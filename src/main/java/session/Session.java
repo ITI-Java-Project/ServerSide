@@ -75,22 +75,26 @@ public class Session {
 
         // rows
         for (int i = 0; i < 3; i++) {
-            if (board[i][0] == p && board[i][1] == p && board[i][2] == p)
+            if (board[i][0] == p && board[i][1] == p && board[i][2] == p) {
                 return true;
+            }
         }
 
         // columns
         for (int i = 0; i < 3; i++) {
-            if (board[0][i] == p && board[1][i] == p && board[2][i] == p)
+            if (board[0][i] == p && board[1][i] == p && board[2][i] == p) {
                 return true;
+            }
         }
 
         // diagonals
-        if (board[0][0] == p && board[1][1] == p && board[2][2] == p)
+        if (board[0][0] == p && board[1][1] == p && board[2][2] == p) {
             return true;
+        }
 
-        if (board[0][2] == p && board[1][1] == p && board[2][0] == p)
+        if (board[0][2] == p && board[1][1] == p && board[2][0] == p) {
             return true;
+        }
 
         return false;
     }
@@ -98,5 +102,9 @@ public class Session {
     private void broadcast(String msg) {
         x.send(msg);
         o.send(msg);
+    }
+
+    public boolean hasPlayer(ClientHandler client) {
+        return client == x || client == o;
     }
 }
