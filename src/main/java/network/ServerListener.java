@@ -87,31 +87,3 @@ public class ServerListener implements MessageListener {
         }
     }
 }
-
-// TODO : IN-Preview (Doesn't work)
-    /* 
-    public void broadcastAvailablePlayers() {
-        Gson gson = new Gson();
-
-        Queue<ClientHandler> waitingClientsQueue = sessionManager.getWaitingClients();
-        List<ClientHandler> waitingClients = List.copyOf(waitingClientsQueue); // copy to list
-
-        for (ClientHandler client : waitingClients) {
-            List<Player> availablePlayers = waitingClients.stream()
-                    .filter(c -> c != client)                 
-                    .filter(c -> !sessionManager.isInSession(c)) 
-                    .map(ClientHandler::getPlayer)
-                    .collect(Collectors.toList());
-
-            String json;
-            if (availablePlayers.isEmpty()) {
-                json = "AVAILABLE_PLAYERS:NONE";
-            } else {
-                json = "AVAILABLE_PLAYERS:" + gson.toJson(availablePlayers);
-            }
-
-            client.send(json);
-        }
-
-    }
-     */

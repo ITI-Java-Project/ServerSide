@@ -50,7 +50,7 @@ public class ClientHandler implements Runnable {
     }
 
     public void send(String msg) {
-        out.println(msg); 
+        out.println(msg);
     }
 
     public Player getPlayer() {
