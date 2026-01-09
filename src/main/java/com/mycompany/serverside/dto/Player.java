@@ -2,14 +2,13 @@ package com.mycompany.serverside.dto;
 
 public class Player {
 
-    private int id; 
+    private int id;
     private int score;
     private String name;
     private String email;
     private String password;
     private String gender;
 
- 
     public Player(int id, int score, String name, String email, String password, String gender) {
         this.id = id;
         this.score = score;
@@ -32,7 +31,7 @@ public class Player {
         return id;
     }
 
-    public void setId(int id) { 
+    public void setId(int id) {
         this.id = id;
     }
 

@@ -33,7 +33,7 @@ public class ConnectionManager {
                 // prevent infinite loop of : Connection Error : ----
                 if (serverSocket.isClosed()) {
                     System.out.println("Server stopped.");
-                    break; 
+                    break;
                 } else {
                     System.out.println("Connection error: " + e.getMessage());
                 }
@@ -43,12 +43,11 @@ public class ConnectionManager {
         }
     }
 
-    
     public void stopServer() throws IOException {
         if (serverSocket != null && !serverSocket.isClosed()) {
-            serverSocket.close();    
+            serverSocket.close();
         }
         // all clientHandler Threads Stopped
-        pool.shutdownNow();           
+        pool.shutdownNow();
     }
 }
