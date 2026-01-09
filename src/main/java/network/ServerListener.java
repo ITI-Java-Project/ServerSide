@@ -41,11 +41,19 @@ public class ServerListener implements MessageListener {
             case "LOGIN":
                 loginAction(msg, client);
                 break;
-                
+
             case "INVITE":
-                handleInvitationRequest(msg,client);
+                handleInvitationRequest(msg, client);
                 break;
-                
+
+            case "INVITE_ACCEPT":
+                handleAcceptInivitation(msg, client);
+                break;
+
+            case "INVITE_REJECT":
+                handleRejectInivitation(msg, client);
+                break;
+
             default:
                 client.send("INVALID_LOGIN_FORMAT");
         }
@@ -114,12 +122,29 @@ public class ServerListener implements MessageListener {
             }
         }
     }
-    
-    private void handleInvitationRequest(String msg , ClientHandler client){
+
+    private void handleInvitationRequest(String msg, ClientHandler client) {
         String[] parts = msg.split(" ");
         int playerId = Integer.parseInt(parts[1]);
         ClientHandler otherClient = sessionManager.getClientByPlayerId(playerId);
-        
-        otherClient.send("INVITE_FROM "+client.getPlayer().getId()+" "+client.getPlayer().getName());    
+
+        otherClient.send("INVITE_FROM " + client.getPlayer().getId() + " " + client.getPlayer().getName());
+    }
+
+    private void handleAcceptInivitation(String msg, ClientHandler client) {
+        String[] parts = msg.split(" ");
+        int playerId = Integer.parseInt(parts[1]);
+        ClientHandler otherClient = sessionManager.getClientByPlayerId(playerId);
+
+        otherClient.send("START");
+        client.send("START");
+    }
+
+    private void handleRejectInivitation(String msg, ClientHandler client) {
+        String[] parts = msg.split(" ");
+        int playerId = Integer.parseInt(parts[1]);
+        ClientHandler otherClient = sessionManager.getClientByPlayerId(playerId);
+
+        otherClient.send("INVITE_FROM " + client.getPlayer().getId() + " " + client.getPlayer().getName());
     }
 }
