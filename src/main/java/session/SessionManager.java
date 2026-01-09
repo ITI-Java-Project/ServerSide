@@ -16,29 +16,33 @@ public class SessionManager {
     // map each player to his session
     private Map<ClientHandler, Session> sessions = new HashMap<>();
 
+
+    
+    public ClientHandler getClientByPlayerId(int playerId){
+        if(waiting.isEmpty()){
+            return null;        
+        }
+        
+        for(ClientHandler c : waiting){
+            if(c.getPlayer().getId() == playerId) {
+            return c;
+            }
+        }
+        
+        return null;
+    }   
+    
+    
     /**
      * Add new player to waiting queue
      */
+    
     public synchronized void addPlayer(ClientHandler c) {
         System.out.println("Session Manaager add Player LOG : " + c.getPlayer());
 
         waiting.add(c);
         System.out.println("Session Manaager add Player LOG Length: " + waiting.size());
-
-        // start game when we have 2 players
-//        if (waiting.size() >= 2) {
-//
-//            ClientHandler p1 = waiting.poll();
-//            ClientHandler p2 = waiting.poll();
-//
-//            Session session = new Session(p1, p2);
-//
-//            sessions.put(p1, session);
-//            sessions.put(p2, session);
-//
-//            p1.send("START X");
-//            p2.send("START O");
-//        }
+        // TODO : Manage Session action
     }
 
     /**
@@ -59,7 +63,7 @@ public class SessionManager {
 
         // remove from waiting queue if exists
         waiting.remove(c);
-        System.out.println("Remove Player Log : " + c.getPlayer().getName()); 
+        System.out.println("Remove Player Log : " + c.getPlayer().getName());
 
         // remove session mapping
         Session session = sessions.remove(c);
@@ -74,19 +78,18 @@ public class SessionManager {
         System.out.println("Session Manager Log : " + waiting.size());
 
         List<Player> availablePlayers = waiting.stream()
-                .filter(c -> c != requester) 
-                .filter(c -> !isInSession(c)) 
+                .filter(c -> c != requester)
+                .filter(c -> !isInSession(c))
                 .map(c -> {
                     Player p = c.getPlayer();
                     if (p == null) {
                         return null;
                     }
 
-                    
                     if (p.getId() <= 0) {
                         Player dbPlayer = PlayerDAO.register(p.getName(), p.getEmail(), p.getPassword());
                         if (dbPlayer != null) {
-                            c.setPlayer(dbPlayer);  
+                            c.setPlayer(dbPlayer);
                             p = dbPlayer;
                         } else {
                             return null;
