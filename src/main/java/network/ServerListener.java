@@ -117,7 +117,7 @@ public class ServerListener implements MessageListener {
     
     private void handleInvitationRequest(String msg , ClientHandler client){
         String[] parts = msg.split(" ");
-        int playerId = Integer.getInteger(parts[1]);
+        int playerId = Integer.parseInt(parts[1]);
         ClientHandler otherClient = sessionManager.getClientByPlayerId(playerId);
         
         otherClient.send("INVITE_FROM "+client.getPlayer().getId()+" "+client.getPlayer().getName());    
