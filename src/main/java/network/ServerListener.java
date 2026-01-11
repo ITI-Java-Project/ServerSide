@@ -149,6 +149,6 @@ public class ServerListener implements MessageListener {
         int playerId = Integer.parseInt(parts[1]);
         ClientHandler otherClient = sessionManager.getClientByPlayerId(playerId);
 
-        otherClient.send("INVITE_FROM " + client.getPlayer().getId() + " " + client.getPlayer().getName());
+        otherClient.send("INVITE_REJECT " + client.getPlayer().getId() + " " + client.getPlayer().getName());
     }
 }
