@@ -24,6 +24,7 @@ public class ServerListener implements MessageListener {
     public void onMessage(String msg, ClientHandler client) {
         System.out.println("Received from client: " + msg);
         String command = msg.split(" ", 2)[0];
+        System.out.println("Message : " + msg + "command : " + command);
 
         switch (command) {
             case "MOVE":
@@ -47,6 +48,7 @@ public class ServerListener implements MessageListener {
                 break;
 
             case "INVITE_ACCEPT":
+                System.out.println("Message : " + msg + "command : " + command);
                 handleAcceptInivitation(msg, client);
                 break;
 
@@ -60,7 +62,7 @@ public class ServerListener implements MessageListener {
     }
 
     private void moveAction(String msg, ClientHandler client) {
-        String[] parts = msg.split(" ");
+        String[] parts = msg.split(" "); // [[Move] , [0] , [0]]
         if (parts.length >= 3) {
             try {
                 int row = Integer.parseInt(parts[1]);
@@ -135,7 +137,9 @@ public class ServerListener implements MessageListener {
         String[] parts = msg.split(" ");
         int playerId = Integer.parseInt(parts[1]);
         ClientHandler otherClient = sessionManager.getClientByPlayerId(playerId);
-
+        sessionManager.createSession(client, otherClient);
+        System.out.println("START " + client.getPlayer().getName());
+        System.out.println("START " + otherClient.getPlayer().getName());
         otherClient.send("START");
         client.send("START");
     }

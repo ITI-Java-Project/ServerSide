@@ -16,27 +16,23 @@ public class SessionManager {
     // map each player to his session
     private Map<ClientHandler, Session> sessions = new HashMap<>();
 
-
-    
-    public ClientHandler getClientByPlayerId(int playerId){
-        if(waiting.isEmpty()){
-            return null;        
+    public ClientHandler getClientByPlayerId(int playerId) {
+        if (waiting.isEmpty()) {
+            return null;
         }
-        
-        for(ClientHandler c : waiting){
-            if(c.getPlayer().getId() == playerId) {
-            return c;
+
+        for (ClientHandler c : waiting) {
+            if (c.getPlayer().getId() == playerId) {
+                return c;
             }
         }
-        
+
         return null;
-    }   
-    
-    
+    }
+
     /**
      * Add new player to waiting queue
      */
-    
     public synchronized void addPlayer(ClientHandler c) {
         System.out.println("Session Manaager add Player LOG : " + c.getPlayer());
 
@@ -45,14 +41,25 @@ public class SessionManager {
         // TODO : Manage Session action
     }
 
-    /**
-     * Handle move coming from client row & col are matrix-based
-     */
+    public synchronized void createSession(ClientHandler p1, ClientHandler p2) {
+        waiting.remove(p1);
+        waiting.remove(p2);
+
+        Session session = new Session(p1, p2);
+
+        sessions.put(p1, session);
+        sessions.put(p2, session);
+        System.out.println("Game Session Start : ");
+        System.out.println("createSession START ");
+        System.out.println("createSession START ");
+        p1.send("GAME_START X");
+        p2.send("GAME_START O");
+    }
+
     public synchronized void handleMove(ClientHandler c, int row, int col) {
         Session session = sessions.get(c);
-
         if (session != null) {
-            session.playMove(c, row, col);
+            session.playMove(c, row, col); 
         }
     }
 

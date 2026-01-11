@@ -53,7 +53,16 @@ public class Session {
 
         // check win
         if (checkWin(turn)) {
-            broadcast("WIN " + turn);
+            if(sender == x){
+                sender.send("WIN " + turn);
+                o.send("Lose " + 'O');
+                broadcast("END"); // HERE : WE CAN CHANGE BASED ON LOGIC OF GAME SESSION
+            }else if (sender == o){
+                sender.send("WIN " + turn);
+                x.send("Lose " + 'X');
+                broadcast("END"); 
+            }
+            
             return;
         }
 
@@ -71,7 +80,7 @@ public class Session {
         return (turn == 'X' && c == x) || (turn == 'O' && c == o);
     }
 
-    private boolean checkWin(char p) {
+    private boolean checkWin(char p)    {
 
         // rows
         for (int i = 0; i < 3; i++) {
@@ -100,6 +109,7 @@ public class Session {
     }
 
     private void broadcast(String msg) {
+        System.out.println("BroadCast Session Message : " + msg);
         x.send(msg);
         o.send(msg);
     }
