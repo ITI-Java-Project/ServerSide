@@ -6,14 +6,17 @@ public class Session {
 
     private ClientHandler x, o;
     private char turn = 'X';
+    private SessionManager sessionManager;
 
     // 3x3 Matrix
     private char[][] board = new char[3][3];
     private int movesCount = 0;
 
-    public Session(ClientHandler x, ClientHandler o) {
+    public Session(ClientHandler x, ClientHandler o, SessionManager manager) {
         this.x = x;
         this.o = o;
+        this.sessionManager = manager;
+
         initBoard();
     }
 
@@ -53,16 +56,15 @@ public class Session {
 
         // check win
         if (checkWin(turn)) {
-            if(sender == x){
+            if (sender == x) {
                 sender.send("WIN " + turn);
                 o.send("Lose " + 'O');
-                broadcast("END"); // HERE : WE CAN CHANGE BASED ON LOGIC OF GAME SESSION
-            }else if (sender == o){
+            } else if (sender == o) {
                 sender.send("WIN " + turn);
                 x.send("Lose " + 'X');
-                broadcast("END"); 
             }
-            
+            // HERE : WE CAN CHANGE BASED ON LOGIC OF GAME SESSION
+            endSession();
             return;
         }
 
@@ -80,7 +82,7 @@ public class Session {
         return (turn == 'X' && c == x) || (turn == 'O' && c == o);
     }
 
-    private boolean checkWin(char p)    {
+    private boolean checkWin(char p) {
 
         // rows
         for (int i = 0; i < 3; i++) {
@@ -116,5 +118,10 @@ public class Session {
 
     public boolean hasPlayer(ClientHandler client) {
         return client == x || client == o;
+    }
+
+    private void endSession() {
+        broadcast("END");
+        sessionManager.finishSession(this);
     }
 }

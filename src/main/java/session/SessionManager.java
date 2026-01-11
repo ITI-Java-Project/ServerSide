@@ -42,24 +42,52 @@ public class SessionManager {
     }
 
     public synchronized void createSession(ClientHandler p1, ClientHandler p2) {
+
         waiting.remove(p1);
         waiting.remove(p2);
 
-        Session session = new Session(p1, p2);
+        Session session = new Session(p1, p2, this);
 
         sessions.put(p1, session);
         sessions.put(p2, session);
-        System.out.println("Game Session Start : ");
-        System.out.println("createSession START ");
-        System.out.println("createSession START ");
+
         p1.send("GAME_START X");
         p2.send("GAME_START O");
+    }
+
+    public synchronized void finishSession(Session session) {
+
+        ClientHandler p1 = null;
+        ClientHandler p2 = null;
+
+        for (Map.Entry<ClientHandler, Session> entry : sessions.entrySet()) {
+            if (entry.getValue() == session) {
+                if (p1 == null) {
+                    p1 = entry.getKey();
+                } else {
+                    p2 = entry.getKey();
+                }
+            }
+        }
+
+        // remove session
+        sessions.entrySet().removeIf(e -> e.getValue() == session);
+
+        // add players back to waiting list
+        if (p1 != null) {
+            waiting.add(p1);
+        }
+        if (p2 != null) {
+            waiting.add(p2);
+        }
+
+        System.out.println("Session finished, players returned to waiting list");
     }
 
     public synchronized void handleMove(ClientHandler c, int row, int col) {
         Session session = sessions.get(c);
         if (session != null) {
-            session.playMove(c, row, col); 
+            session.playMove(c, row, col);
         }
     }
 
@@ -121,4 +149,5 @@ public class SessionManager {
     public Queue<ClientHandler> getWaitingClients() {
         return waiting;
     }
+
 }
