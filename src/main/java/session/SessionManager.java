@@ -16,6 +16,20 @@ public class SessionManager {
     // map each player to his session
     private Map<ClientHandler, Session> sessions = new HashMap<>();
 
+    public ClientHandler getClientByPlayerId(int playerId) {
+        if (waiting.isEmpty()) {
+            return null;
+        }
+
+        for (ClientHandler c : waiting) {
+            if (c.getPlayer().getId() == playerId) {
+                return c;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Add new player to waiting queue
      */
@@ -27,12 +41,51 @@ public class SessionManager {
         // TODO : Manage Session action
     }
 
-    /**
-     * Handle move coming from client row & col are matrix-based
-     */
+    public synchronized void createSession(ClientHandler p1, ClientHandler p2) {
+
+        waiting.remove(p1);
+        waiting.remove(p2);
+
+        Session session = new Session(p1, p2, this);
+
+        sessions.put(p1, session);
+        sessions.put(p2, session);
+
+        p1.send("GAME_START X");
+        p2.send("GAME_START O");
+    }
+
+    public synchronized void finishSession(Session session) {
+
+        ClientHandler p1 = null;
+        ClientHandler p2 = null;
+
+        for (Map.Entry<ClientHandler, Session> entry : sessions.entrySet()) {
+            if (entry.getValue() == session) {
+                if (p1 == null) {
+                    p1 = entry.getKey();
+                } else {
+                    p2 = entry.getKey();
+                }
+            }
+        }
+
+        // remove session
+        sessions.entrySet().removeIf(e -> e.getValue() == session);
+
+        // add players back to waiting list
+        if (p1 != null) {
+            waiting.add(p1);
+        }
+        if (p2 != null) {
+            waiting.add(p2);
+        }
+
+        System.out.println("Session finished, players returned to waiting list");
+    }
+
     public synchronized void handleMove(ClientHandler c, int row, int col) {
         Session session = sessions.get(c);
-
         if (session != null) {
             session.playMove(c, row, col);
         }
@@ -96,4 +149,5 @@ public class SessionManager {
     public Queue<ClientHandler> getWaitingClients() {
         return waiting;
     }
+
 }

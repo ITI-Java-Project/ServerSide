@@ -24,6 +24,7 @@ public class ServerListener implements MessageListener {
     public void onMessage(String msg, ClientHandler client) {
         System.out.println("Received from client: " + msg);
         String command = msg.split(" ", 2)[0];
+        System.out.println("Message : " + msg + "command : " + command);
 
         switch (command) {
             case "MOVE":
@@ -42,13 +43,26 @@ public class ServerListener implements MessageListener {
                 loginAction(msg, client);
                 break;
 
+            case "INVITE":
+                handleInvitationRequest(msg, client);
+                break;
+
+            case "INVITE_ACCEPT":
+                System.out.println("Message : " + msg + "command : " + command);
+                handleAcceptInivitation(msg, client);
+                break;
+
+            case "INVITE_REJECT":
+                handleRejectInivitation(msg, client);
+                break;
+
             default:
                 client.send("INVALID_LOGIN_FORMAT");
         }
     }
 
     private void moveAction(String msg, ClientHandler client) {
-        String[] parts = msg.split(" ");
+        String[] parts = msg.split(" "); // [[Move] , [0] , [0]]
         if (parts.length >= 3) {
             try {
                 int row = Integer.parseInt(parts[1]);
@@ -111,4 +125,30 @@ public class ServerListener implements MessageListener {
         }
     }
 
+    private void handleInvitationRequest(String msg, ClientHandler client) {
+        String[] parts = msg.split(" ");
+        int playerId = Integer.parseInt(parts[1]);
+        ClientHandler otherClient = sessionManager.getClientByPlayerId(playerId);
+
+        otherClient.send("INVITE_FROM " + client.getPlayer().getId() + " " + client.getPlayer().getName());
+    }
+
+    private void handleAcceptInivitation(String msg, ClientHandler client) {
+        String[] parts = msg.split(" ");
+        int playerId = Integer.parseInt(parts[1]);
+        ClientHandler otherClient = sessionManager.getClientByPlayerId(playerId);
+        sessionManager.createSession(client, otherClient);
+        System.out.println("START " + client.getPlayer().getName());
+        System.out.println("START " + otherClient.getPlayer().getName());
+        otherClient.send("START");
+        client.send("START");
+    }
+
+    private void handleRejectInivitation(String msg, ClientHandler client) {
+        String[] parts = msg.split(" ");
+        int playerId = Integer.parseInt(parts[1]);
+        ClientHandler otherClient = sessionManager.getClientByPlayerId(playerId);
+
+        otherClient.send("INVITE_REJECT " + client.getPlayer().getId() + " " + client.getPlayer().getName());
+    }
 }
