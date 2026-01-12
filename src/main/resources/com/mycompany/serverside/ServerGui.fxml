@@ -9,7 +9,6 @@
 <?import javafx.scene.text.*?>
 <?import javafx.collections.*?>
 
-
 <AnchorPane id="AnchorPane" prefHeight="700.0" prefWidth="1200.0" xmlns:fx="http://javafx.com/fxml/1" 
             fx:controller="com.mycompany.serverside.ServerController"
             style="-fx-background-image:url('file:src/main/resources/images/DefaultMenuBG.png'); 
@@ -17,24 +16,20 @@
                    -fx-background-position: center;">
     
     <VBox layoutX="200" layoutY="400" spacing="30" alignment="CENTER">
-        <!-- Toggle Button -->
+        
         <Button fx:id="toggleButton" text="Start" 
                 prefHeight="100.0" prefWidth="350.0"
                 onAction="#toggleAction"
                 styleClass="start-button"/>
     </VBox>
     
-    <StackPane layoutX="800" layoutY="200">
-        <!-- Spinner Wheel using PieChart -->
-        <PieChart fx:id="pieChart" 
-                  prefWidth="500" prefHeight="500"
-                  legendVisible="false"
-                  labelsVisible="true"
-                  startAngle="90"
-                  style="-fx-background-color: transparent;"/>
-        
-        <!-- Center white circle -->
-        <Circle radius="5" fill="white" 
-                style="-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 0);"/>
-    </StackPane>
+    <AnchorPane fx:id="chartContainer" 
+                layoutX="900" 
+                layoutY="180"
+                prefHeight="500.0" 
+                prefWidth="400.0"
+                style="-fx-background-color: rgba(255, 255, 255, 0.9); 
+                       -fx-background-radius: 15; 
+                       -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0, 0, 5);"/>
+    
 </AnchorPane>

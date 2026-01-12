@@ -1,7 +1,6 @@
 package session;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.mycompany.serverside.dto.Player;
 import com.mycompany.serverside.dto.*;
 import java.util.*;
@@ -15,6 +14,8 @@ public class SessionManager {
 
     // map each player to his session
     private Map<ClientHandler, Session> sessions = new HashMap<>();
+
+    private static int playersInSessionCount = 0;
 
     public ClientHandler getClientByPlayerId(int playerId) {
         if (waiting.isEmpty()) {
@@ -47,6 +48,7 @@ public class SessionManager {
         waiting.remove(p2);
 
         Session session = new Session(p1, p2, this);
+        playersInSessionCount += 2;
 
         sessions.put(p1, session);
         sessions.put(p2, session);
@@ -72,6 +74,10 @@ public class SessionManager {
 
         // remove session
         sessions.entrySet().removeIf(e -> e.getValue() == session);
+
+        if (playersInSessionCount >= 2) {
+            playersInSessionCount -= 2;
+        }
 
         // add players back to waiting list
         if (p1 != null) {
@@ -150,4 +156,7 @@ public class SessionManager {
         return waiting;
     }
 
+    public static int getPlayersInSessionCount() {
+        return playersInSessionCount;
+    }
 }
