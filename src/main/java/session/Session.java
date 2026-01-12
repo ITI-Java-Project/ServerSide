@@ -1,5 +1,6 @@
 package session;
 
+import com.mycompany.serverside.dto.PlayerDAO;
 import network.ClientHandler;
 
 public class Session {
@@ -59,9 +60,11 @@ public class Session {
             if (sender == x) {
                 sender.send("WIN " + turn);
                 o.send("Lose " + 'O');
+                PlayerDAO.increaseWinnerScore(x.getPlayer().getId());
             } else if (sender == o) {
                 sender.send("WIN " + turn);
                 x.send("Lose " + 'X');
+                PlayerDAO.increaseWinnerScore(o.getPlayer().getId());
             }
             // HERE : WE CAN CHANGE BASED ON LOGIC OF GAME SESSION
             endSession();
