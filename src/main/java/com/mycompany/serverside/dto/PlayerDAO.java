@@ -15,8 +15,6 @@ public class PlayerDAO {
 
     private static final String REGISTER_CHECK = "SELECT * FROM PLAYER WHERE EMAIL = ?";
 
-    private static final String UPDATE_SCORE
-            = "UPDATE PLAYER SET SCORE = SCORE + ? WHERE ID = ?";
 
     public static Player register(
             String name,
@@ -80,7 +78,7 @@ public class PlayerDAO {
                 + "SET SCORE = SCORE + 1 "
                 + "WHERE ID = " + playerId;
 
-        return DbManager.init().executeUpdate(query);
+        return DbManager.init().updateQuery(query);
     }
 
 }
