@@ -1,6 +1,6 @@
 package com.mycompany.serverside.dto;
 
-public class Player {
+public class PlayerDto {
 
     private int id;
     private int score;
@@ -9,7 +9,7 @@ public class Player {
     private String password;
     private String gender;
 
-    public Player(int id, int score, String name, String email, String password, String gender) {
+    public PlayerDto(int id, int score, String name, String email, String password, String gender) {
         this.id = id;
         this.score = score;
         this.name = name;
@@ -18,12 +18,12 @@ public class Player {
         this.gender = gender;
     }
 
-    public Player(int score, String name) {
+    public PlayerDto(int score, String name) {
         this.score = score;
         this.name = name;
     }
 
-    public Player() {
+    public PlayerDto() {
     }
 
     // Getters & Setters

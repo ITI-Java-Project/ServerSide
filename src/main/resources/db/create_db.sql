@@ -11,25 +11,20 @@ CREATE TABLE PLAYER (
 CREATE TABLE SESSION (
     ID INT NOT NULL GENERATED ALWAYS AS IDENTITY,
     
-    Player1_ID INT NOT NULL,
-    Player2_ID INT NOT NULL,
+    Player1ID INT NOT NULL,
+    Player2ID INT NOT NULL,
     
-    Start_Time TIMESTAMP,
-    End_Time TIMESTAMP,
-    
-    Winner_ID INT,
+    Player1Score INT ,
+    Player2Score INT,
     
     PRIMARY KEY (ID),
     
     CONSTRAINT fk_player1
-        FOREIGN KEY (Player1_ID)
+        FOREIGN KEY (Player1ID)
         REFERENCES PLAYER(ID),
         
     CONSTRAINT fk_player2
-        FOREIGN KEY (Player2_ID)
-        REFERENCES PLAYER(ID),
-        
-    CONSTRAINT fk_winner
-        FOREIGN KEY (Winner_ID)
+        FOREIGN KEY (Player2ID)
         REFERENCES PLAYER(ID)
+        
 );
