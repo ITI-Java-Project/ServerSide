@@ -1,6 +1,7 @@
 package network;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.mycompany.serverside.dto.*;
 import java.util.List;
 import session.SessionManager;
@@ -110,20 +111,23 @@ public class ServerListener implements MessageListener {
     private void registerAction(String msg, ClientHandler client) {
         String[] parts = msg.split(" ");
         if (parts.length == 4) {
-            String username = parts[1];
+            String name = parts[1];
             String email = parts[2];
             String password = parts[3];
 
-            Player player = PlayerDAO.register(username, email, password);
+            Player player = PlayerDAO.register(name, email, password);
+
             if (player != null) {
                 client.setPlayer(player);
                 sessionManager.addPlayer(client);
-                client.send("REGISTERED");
+
+                Gson gson = new GsonBuilder().create();
+                String playerJson = gson.toJson(player);
+
+                client.send("REGISTER_SUCCESS " + playerJson);
             } else {
-                client.send("REGISTER_FAILED");
+                client.send("REGISTER_FAILED email_already_exists");
             }
-        } else {
-            client.send("INVALID_REGISTER_FORMAT");
         }
     }
 
@@ -137,9 +141,13 @@ public class ServerListener implements MessageListener {
             if (player != null) {
                 client.setPlayer(player);
                 sessionManager.addPlayer(client);
-                client.send("LOGIN_SUCCESS");
+
+                Gson gson = new GsonBuilder().create();
+                String playerJson = gson.toJson(player);
+
+                client.send("LOGIN_SUCCESS " + playerJson);
             } else {
-                client.send("LOGIN_FAILED : username or password isn't correct");
+                client.send("LOGIN_FAILED username_or_password_invalid");
             }
         }
     }
