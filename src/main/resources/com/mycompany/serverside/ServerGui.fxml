@@ -11,7 +11,7 @@
 
 <AnchorPane id="AnchorPane" prefHeight="700.0" prefWidth="1200.0" xmlns:fx="http://javafx.com/fxml/1" 
             fx:controller="com.mycompany.serverside.ServerController"
-            style="-fx-background-image:url('file:src/main/resources/images/DefaultMenuBG.png'); 
+            style="-fx-background-image:url('/images/DefaultMenuBG.png'); 
                    -fx-background-size: cover; 
                    -fx-background-position: center;">
     
