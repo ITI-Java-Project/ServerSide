@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mycompany.serverside.dto.*;
 import java.util.List;
+import java.util.Queue;
 import session.SessionManager;
 
 public class ServerListener implements MessageListener {
@@ -140,17 +141,32 @@ public class ServerListener implements MessageListener {
 
             PlayerDto player = PlayerDao.login(username, password);
             if (player != null) {
-                client.setPlayer(player);
-                sessionManager.addPlayer(client);
+                if (!checkClientStatusLoggedOrNot(player)) {
+                    client.setPlayer(player);
+                    sessionManager.addPlayer(client);
 
-                Gson gson = new GsonBuilder().create();
-                String playerJson = gson.toJson(player);
+                    Gson gson = new GsonBuilder().create();
+                    String playerJson = gson.toJson(player);
 
-                client.send("LOGIN_SUCCESS " + playerJson);
+                    client.send("LOGIN_SUCCESS " + playerJson);
+                } else {
+                    client.send("LOGIN_FAILED you already logged in");
+                }
+
             } else {
                 client.send("LOGIN_FAILED username_or_password_invalid");
             }
         }
+    }
+
+    private boolean checkClientStatusLoggedOrNot(PlayerDto player) {
+        Queue<ClientHandler> loggedClients = sessionManager.getWaitingClients();
+        for (ClientHandler client : loggedClients) {
+            if (client.getPlayer().getId() == player.getId()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void handleInvitationRequest(String msg, ClientHandler client) {
@@ -174,7 +190,7 @@ public class ServerListener implements MessageListener {
         client.send("START");
 
         //send ession data to playes as json
-         sendSessionDataAsJson(sessionData,client,otherClient);
+        sendSessionDataAsJson(sessionData, client, otherClient);
     }
 
     private void handleRejectInivitation(String msg, ClientHandler client) {
