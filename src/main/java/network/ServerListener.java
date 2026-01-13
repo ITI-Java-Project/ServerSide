@@ -205,7 +205,7 @@ public class ServerListener implements MessageListener {
         Gson gson = new GsonBuilder().create();
         String sessionJson = gson.toJson(sessionData);
 
-        c1.send("SessionData " + sessionJson);
-        c2.send("SessionData " + sessionJson);
+        c1.send("SESSION_DATA:" + sessionJson);
+        c2.send("SESSION_DATA:" + sessionJson);
     }
 }
