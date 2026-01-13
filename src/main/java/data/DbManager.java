@@ -52,7 +52,7 @@ public class DbManager {
         return executeUpdate(query);
     }
 
-    private boolean executeUpdate(String query) {
+    public boolean executeUpdate(String query) {
         try (Statement stmt = conn.createStatement()) {
             return stmt.executeUpdate(query) > 0;
         } catch (SQLException e) {

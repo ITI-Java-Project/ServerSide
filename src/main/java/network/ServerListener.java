@@ -3,6 +3,7 @@ package network;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mycompany.serverside.dto.*;
+import java.util.List;
 import session.SessionManager;
 
 public class ServerListener implements MessageListener {
@@ -44,7 +45,9 @@ public class ServerListener implements MessageListener {
             case "LOGIN":
                 loginAction(msg, client);
                 break;
-
+            case "GET_ALL_PLAYERS":
+                getAllPlayersAction(client);
+                break;
             case "INVITE":
                 handleInvitationRequest(msg, client);
                 break;
@@ -61,6 +64,21 @@ public class ServerListener implements MessageListener {
             default:
                 client.send("INVALID_LOGIN_FORMAT");
         }
+    }
+
+    private void getAllPlayersAction(ClientHandler client) {
+
+        List<Player> players = PlayerDAO.getAllPlayers();
+
+        if (players == null || players.isEmpty()) {
+            client.send("ALL_PLAYERS:NONE");
+            return;
+        }
+
+        Gson gson = new Gson();
+        String json = gson.toJson(players);
+
+        client.send("ALL_PLAYERS:" + json);
     }
 
     private void moveAction(String msg, ClientHandler client) {

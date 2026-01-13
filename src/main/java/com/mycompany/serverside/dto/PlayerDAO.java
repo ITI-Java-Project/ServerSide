@@ -3,6 +3,8 @@ package com.mycompany.serverside.dto;
 import data.DbManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlayerDAO {
 
@@ -14,6 +16,8 @@ public class PlayerDAO {
             = "SELECT * FROM PLAYER WHERE NAME = ? AND PASSWORD = ?";
 
     private static final String REGISTER_CHECK = "SELECT * FROM PLAYER WHERE EMAIL = ?";
+
+    private static final String GET_ALL_PLAYERS_QUERY = "SELECT * FROM PLAYER ORDER BY SCORE DESC";
 
     public static Player register(
             String name,
@@ -70,4 +74,38 @@ public class PlayerDAO {
         }
         return null;
     }
+
+    public static List<Player> getAllPlayers() {
+        List<Player> players = new ArrayList<>();
+
+        try {
+            ResultSet rs = DbManager.init().getQuery(GET_ALL_PLAYERS_QUERY);
+
+            while (rs != null && rs.next()) {
+                Player p = new Player();
+                p.setId(rs.getInt("ID"));
+                p.setName(rs.getString("NAME"));
+                p.setEmail(rs.getString("EMAIL"));
+                p.setPassword(rs.getString("PASSWORD"));
+                p.setScore(rs.getInt("SCORE"));
+                p.setGender(rs.getString("GENDER"));
+
+                players.add(p);
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return players;
+    }
+    public static boolean increaseWinnerScore(int playerId) {
+        String query
+                = "UPDATE PLAYER "
+                + "SET SCORE = SCORE + 1 "
+                + "WHERE ID = " + playerId;
+
+        return DbManager.init().updateQuery(query);
+    }
+
 }
