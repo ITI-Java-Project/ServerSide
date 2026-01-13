@@ -5,8 +5,8 @@ public class Session {
     private final int id;
     private final int player1Id;
     private final int player2Id;
-    private  int player1Score;
-    private  int player2Score;
+    private int player1Score;
+    private int player2Score;
 
     public Session(int id, int player1Id, int player2Id, int player1Score , int player2Score) {
         this.id = id;
