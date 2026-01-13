@@ -57,16 +57,18 @@ public class SessionManager {
 
         p1.send("GAME_START X");
         p2.send("GAME_START O");
-        
+
         //get session data of this two players
         int player1Id = p1.getPlayer().getId();
         int player2Id = p2.getPlayer().getId();
-        
+        String player1Name = p1.getPlayer().getName();
+        String player2Name = p2.getPlayer().getName();
+
         SessionDto sessionObject = SessionDao.getSessionData(player1Id, player2Id);
-        if(sessionObject == null){
-            sessionObject = SessionDao.createSession(player1Id,player2Id);
+        if (sessionObject == null) {
+            sessionObject = SessionDao.createSession(player1Id, player2Id, player1Name, player2Name);
         }
-        
+
         return sessionObject;
     }
 

@@ -112,7 +112,7 @@ public class DbManager {
 
             // 2 get last generated ID (Derby way)
             try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(
-                    "SELECT IDENTITY_VAL_LOCAL() FROM PLAYER"
+                    "SELECT IDENTITY_VAL_LOCAL()"
             )) {
 
                 if (rs.next()) {

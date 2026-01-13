@@ -7,13 +7,17 @@ public class SessionDto {
     private final int player2Id;
     private int player1Score;
     private int player2Score;
+    private final String player1Name;
+    private final String player2Name;
 
-    public SessionDto(int id, int player1Id, int player2Id, int player1Score , int player2Score) {
+    public SessionDto(int id, int player1Id, int player2Id, String player1Name, String player2Name ,int player1Score, int player2Score) {
         this.id = id;
         this.player1Id = player1Id;
         this.player2Id = player2Id;
         this.player1Score = player1Score;
         this.player2Score = player2Score;
+        this.player1Name = player1Name;
+        this.player2Name = player2Name;
     }
 
     public int getId() {
@@ -42,5 +46,13 @@ public class SessionDto {
 
     public int getPlayer2Score() {
         return player2Score;
+    }
+
+    public String getPlayer1Name() {
+        return player1Name;
+    }
+
+    public String getPlayer2Name() {
+        return player2Name;
     }
 }
