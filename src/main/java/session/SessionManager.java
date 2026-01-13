@@ -1,11 +1,13 @@
 package session;
 
+import com.mycompany.serverside.dao.PlayerDao;
 import com.google.gson.Gson;
-import com.mycompany.serverside.dto.Player;
-import com.mycompany.serverside.dto.*;
+import com.mycompany.serverside.dao.SessionDao;
+import com.mycompany.serverside.dto.PlayerDto;
 import java.util.*;
 import java.util.stream.Collectors;
 import network.*;
+import com.mycompany.serverside.dto.SessionDto;
 
 public class SessionManager {
 
@@ -39,10 +41,10 @@ public class SessionManager {
 
         waiting.add(c);
         System.out.println("Session Manaager add Player LOG Length: " + waiting.size());
-        // TODO : Manage Session action
+        // TODO : Manage SessionDto action
     }
 
-    public synchronized void createSession(ClientHandler p1, ClientHandler p2) {
+    public synchronized SessionDto createSession(ClientHandler p1, ClientHandler p2) {
 
         waiting.remove(p1);
         waiting.remove(p2);
@@ -55,6 +57,17 @@ public class SessionManager {
 
         p1.send("GAME_START X");
         p2.send("GAME_START O");
+        
+        //get session data of this two players
+        int player1Id = p1.getPlayer().getId();
+        int player2Id = p2.getPlayer().getId();
+        
+        SessionDto sessionObject = SessionDao.getSessionData(player1Id, player2Id);
+        if(sessionObject == null){
+            sessionObject = SessionDao.createSession(player1Id,player2Id);
+        }
+        
+        return sessionObject;
     }
 
     public synchronized void finishSession(Session session) {
@@ -118,17 +131,17 @@ public class SessionManager {
     public synchronized String getAvailablePlayersAsJsonString(ClientHandler requester) {
         System.out.println("Session Manager Log : " + waiting.size());
 
-        List<Player> availablePlayers = waiting.stream()
+        List<PlayerDto> availablePlayers = waiting.stream()
                 .filter(c -> c != requester)
                 .filter(c -> !isInSession(c))
                 .map(c -> {
-                    Player p = c.getPlayer();
+                    PlayerDto p = c.getPlayer();
                     if (p == null) {
                         return null;
                     }
 
                     if (p.getId() <= 0) {
-                        Player dbPlayer = PlayerDAO.register(p.getName(), p.getEmail(), p.getPassword());
+                        PlayerDto dbPlayer = PlayerDao.register(p.getName(), p.getEmail(), p.getPassword());
                         if (dbPlayer != null) {
                             c.setPlayer(dbPlayer);
                             p = dbPlayer;

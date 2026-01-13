@@ -1,6 +1,6 @@
 package network;
 
-import com.mycompany.serverside.dto.Player;
+import com.mycompany.serverside.dto.PlayerDto;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -16,7 +16,7 @@ public class ClientHandler implements Runnable {
     private BufferedReader in;
     private PrintWriter out;
     private MessageListener listener;
-    private Player player;
+    private PlayerDto player;
 
     public ClientHandler(Socket socket, MessageListener listener) throws IOException {
         this.socket = socket;
@@ -53,11 +53,11 @@ public class ClientHandler implements Runnable {
         out.println(msg);
     }
 
-    public Player getPlayer() {
+    public PlayerDto getPlayer() {
         return player;
     }
 
-    public void setPlayer(Player player) {
+    public void setPlayer(PlayerDto player) {
         this.player = player;
     }
 }

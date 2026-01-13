@@ -1,5 +1,6 @@
 package network;
 
+import com.mycompany.serverside.dao.PlayerDao;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mycompany.serverside.dto.*;
@@ -68,7 +69,7 @@ public class ServerListener implements MessageListener {
 
     private void getAllPlayersAction(ClientHandler client) {
 
-        List<Player> players = PlayerDAO.getAllPlayers();
+        List<PlayerDto> players = PlayerDao.getAllPlayers();
 
         if (players == null || players.isEmpty()) {
             client.send("ALL_PLAYERS:NONE");
@@ -115,7 +116,7 @@ public class ServerListener implements MessageListener {
             String email = parts[2];
             String password = parts[3];
 
-            Player player = PlayerDAO.register(name, email, password);
+            PlayerDto player = PlayerDao.register(name, email, password);
 
             if (player != null) {
                 client.setPlayer(player);
@@ -137,7 +138,7 @@ public class ServerListener implements MessageListener {
             String username = parts[1];
             String password = parts[2];
 
-            Player player = PlayerDAO.login(username, password);
+            PlayerDto player = PlayerDao.login(username, password);
             if (player != null) {
                 client.setPlayer(player);
                 sessionManager.addPlayer(client);
@@ -164,11 +165,16 @@ public class ServerListener implements MessageListener {
         String[] parts = msg.split(" ");
         int playerId = Integer.parseInt(parts[1]);
         ClientHandler otherClient = sessionManager.getClientByPlayerId(playerId);
-        sessionManager.createSession(client, otherClient);
+
+        SessionDto sessionData = sessionManager.createSession(client, otherClient);
+
         System.out.println("START " + client.getPlayer().getName());
         System.out.println("START " + otherClient.getPlayer().getName());
         otherClient.send("START");
         client.send("START");
+
+        //send ession data to playes as json
+         sendSessionDataAsJson(sessionData,client,otherClient);
     }
 
     private void handleRejectInivitation(String msg, ClientHandler client) {
@@ -177,5 +183,13 @@ public class ServerListener implements MessageListener {
         ClientHandler otherClient = sessionManager.getClientByPlayerId(playerId);
 
         otherClient.send("INVITE_REJECT " + client.getPlayer().getId() + " " + client.getPlayer().getName());
+    }
+
+    private void sendSessionDataAsJson(SessionDto sessionData, ClientHandler c1, ClientHandler c2) {
+        Gson gson = new GsonBuilder().create();
+        String sessionJson = gson.toJson(sessionData);
+
+        c1.send("SessionData " + sessionJson);
+        c2.send("SessionData " + sessionJson);
     }
 }
