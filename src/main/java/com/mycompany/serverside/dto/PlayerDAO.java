@@ -99,4 +99,13 @@ public class PlayerDAO {
 
         return players;
     }
+    public static boolean increaseWinnerScore(int playerId) {
+        String query
+                = "UPDATE PLAYER "
+                + "SET SCORE = SCORE + 1 "
+                + "WHERE ID = " + playerId;
+
+        return DbManager.init().updateQuery(query);
+    }
+
 }
