@@ -1,12 +1,13 @@
-package com.mycompany.serverside.dto;
+package com.mycompany.serverside.dao;
 
+import com.mycompany.serverside.dto.PlayerDto;
 import data.DbManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlayerDAO {
+public class PlayerDao {
 
     private static final String INSERT_PLAYER
             = "INSERT INTO PLAYER (NAME, EMAIL, PASSWORD, SCORE) "
@@ -19,7 +20,7 @@ public class PlayerDAO {
 
     private static final String GET_ALL_PLAYERS_QUERY = "SELECT * FROM PLAYER ORDER BY SCORE DESC";
 
-    public static Player register(
+    public static PlayerDto register(
             String name,
             String email,
             String password
@@ -32,7 +33,7 @@ public class PlayerDAO {
                 return null;
             }
         } catch (SQLException ex) {
-            System.getLogger(PlayerDAO.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            System.getLogger(PlayerDao.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
 
         int id = DbManager.init().insertAndGetId(
@@ -47,7 +48,7 @@ public class PlayerDAO {
             return null;
         }
 
-        Player p = new Player();
+        PlayerDto p = new PlayerDto();
         p.setId(id);
         p.setName(name);
         p.setEmail(email);
@@ -56,11 +57,11 @@ public class PlayerDAO {
         return p;
     }
 
-    public static Player login(String username, String password) {
+    public static PlayerDto login(String username, String password) {
         try {
             ResultSet rs = DbManager.init().getQueryPrepared(LOGIN_QUERY, username, password);
             if (rs != null && rs.next()) {
-                Player p = new Player();
+                PlayerDto p = new PlayerDto();
                 p.setId(rs.getInt("ID"));
                 p.setName(rs.getString("NAME"));
                 p.setEmail(rs.getString("EMAIL"));
@@ -75,14 +76,14 @@ public class PlayerDAO {
         return null;
     }
 
-    public static List<Player> getAllPlayers() {
-        List<Player> players = new ArrayList<>();
+    public static List<PlayerDto> getAllPlayers() {
+        List<PlayerDto> players = new ArrayList<>();
 
         try {
             ResultSet rs = DbManager.init().getQuery(GET_ALL_PLAYERS_QUERY);
 
             while (rs != null && rs.next()) {
-                Player p = new Player();
+                PlayerDto p = new PlayerDto();
                 p.setId(rs.getInt("ID"));
                 p.setName(rs.getString("NAME"));
                 p.setEmail(rs.getString("EMAIL"));
@@ -99,6 +100,7 @@ public class PlayerDAO {
 
         return players;
     }
+
     public static boolean increaseWinnerScore(int playerId) {
         String query
                 = "UPDATE PLAYER "
