@@ -1,6 +1,6 @@
 package com.mycompany.serverside;
 
-import com.mycompany.serverside.dto.PlayerDAO;
+import com.mycompany.serverside.dao.PlayerDao;
 import java.net.URL;
 import javafx.util.Duration;
 import java.util.ResourceBundle;
@@ -116,7 +116,7 @@ public class ServerController implements Initializable {
     }
 
     private void prepareChartData() {
-        allPlayersCount = PlayerDAO.getAllPlayers().size();
+        allPlayersCount = PlayerDao.getAllPlayers().size();
         waitingPlayersCount = sessionManager.getWaitingClients().size();
         playersInSessionCount = SessionManager.getPlayersInSessionCount();
         offlinePlayersCount = (allPlayersCount - (waitingPlayersCount + playersInSessionCount));
