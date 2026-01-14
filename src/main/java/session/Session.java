@@ -1,21 +1,38 @@
 package session;
 
 import com.mycompany.serverside.dao.PlayerDao;
+import com.mycompany.serverside.dao.SessionDao;
+import com.mycompany.serverside.dto.SessionDto;
 import network.ClientHandler;
+import com.google.gson.Gson;
 
 public class Session {
 
     private ClientHandler x, o;
     private char turn = 'X';
     private SessionManager sessionManager;
+    private int sessionId;
+    private int player1Score = 0;  // Player 1's score in this session (X player)
+    private int player2Score = 0;  // Player 2's score in this session (O player)
+    private int player1Id;
+    private int player2Id;
 
     private char[][] board = new char[3][3];
     private int movesCount = 0;
 
-    public Session(ClientHandler x, ClientHandler o, SessionManager manager) {
+    public Session(ClientHandler x, ClientHandler o, SessionManager manager, SessionDto sessionData) {
         this.x = x;
         this.o = o;
         this.sessionManager = manager;
+        this.sessionId = sessionData.getId();
+        this.player1Id = sessionData.getPlayer1Id();
+        this.player2Id = sessionData.getPlayer2Id();
+        
+        // Load existing scores from the session
+        this.player1Score = sessionData.getPlayer1Score();
+        this.player2Score = sessionData.getPlayer2Score();
+        
+        System.out.println("Session " + sessionId + " initialized with scores - Player1: " + player1Score + ", Player2: " + player2Score);
 
         initBoard();
     }
@@ -57,15 +74,35 @@ public class Session {
         // check win
         if (checkWin(turn)) {
             if (sender == x) {
+                // Player 1 (X) wins
+                player1Score++;
                 sender.send("WIN " + turn);
                 o.send("Lose " + 'O');
+                
+                // Update PLAYER table - increase total score
                 PlayerDao.increaseWinnerScore(x.getPlayer().getId());
+                System.out.println("Player " + x.getPlayer().getName() + " total score increased");
+                
             } else if (sender == o) {
+                // Player 2 (O) wins
+                player2Score++;
                 sender.send("WIN " + turn);
                 x.send("Lose " + 'X');
+                
+                // Update PLAYER table - increase total score
                 PlayerDao.increaseWinnerScore(o.getPlayer().getId());
+                System.out.println("Player " + o.getPlayer().getName() + " total score increased");
             }
-            // HERE : WE CAN CHANGE BASED ON LOGIC OF GAME SESSION
+            
+            // Update SESSION table - update head-to-head scores
+            boolean updated = SessionDao.updateSessionScores(sessionId, player1Score, player2Score);
+            
+            if (updated) {
+                System.out.println("Session scores updated - P1: " + player1Score + ", P2: " + player2Score);
+                // Send updated session data to both players
+                sendUpdatedSessionData();
+            }
+            
             endSession();
             return;
         }
@@ -73,6 +110,8 @@ public class Session {
         // check draw
         if (movesCount == 9) {
             broadcast("DRAW");
+            // Send session data even on draw (scores don't change but client might want to see)
+            sendUpdatedSessionData();
             return;
         }
 
@@ -116,6 +155,20 @@ public class Session {
         System.out.println("BroadCast Session Message : " + msg);
         x.send(msg);
         o.send(msg);
+    }
+
+    private void sendUpdatedSessionData() {
+        // Get the updated session data from database
+        SessionDto updatedSession = SessionDao.getSessionById(sessionId);
+        
+        if (updatedSession != null) {
+            Gson gson = new Gson();
+            String sessionJson = gson.toJson(updatedSession);
+            
+            System.out.println("Sending updated session data: " + sessionJson);
+            x.send("SESSION_DATA:" + sessionJson);
+            o.send("SESSION_DATA:" + sessionJson);
+        }
     }
 
     public boolean hasPlayer(ClientHandler client) {

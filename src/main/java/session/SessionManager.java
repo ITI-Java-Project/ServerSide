@@ -37,11 +37,10 @@ public class SessionManager {
      * Add new player to waiting queue
      */
     public synchronized void addPlayer(ClientHandler c) {
-        System.out.println("Session Manaager add Player LOG : " + c.getPlayer());
+        System.out.println("Session Manager add Player LOG : " + c.getPlayer());
 
         waiting.add(c);
-        System.out.println("Session Manaager add Player LOG Length: " + waiting.size());
-        // TODO : Manage SessionDto action
+        System.out.println("Session Manager add Player LOG Length: " + waiting.size());
     }
 
     public synchronized SessionDto createSession(ClientHandler p1, ClientHandler p2) {
@@ -49,25 +48,45 @@ public class SessionManager {
         waiting.remove(p1);
         waiting.remove(p2);
 
-        Session session = new Session(p1, p2, this);
-        playersInSessionCount += 2;
-
-        sessions.put(p1, session);
-        sessions.put(p2, session);
-
-        p1.send("GAME_START X");
-        p2.send("GAME_START O");
-
-        //get session data of this two players
         int player1Id = p1.getPlayer().getId();
         int player2Id = p2.getPlayer().getId();
         String player1Name = p1.getPlayer().getName();
         String player2Name = p2.getPlayer().getName();
 
-        SessionDto sessionObject = SessionDao.getSessionData(player1Id, player2Id);
+        // Try to get existing session between these two players
+        SessionDto sessionObject = SessionDao.getSessionByPlayers(player1Id, player2Id);
+        
         if (sessionObject == null) {
+            // No existing session - create new one
             sessionObject = SessionDao.createSession(player1Id, player2Id, player1Name, player2Name);
+            System.out.println("Created NEW session between " + player1Name + " and " + player2Name);
+        } else {
+            // Existing session found - reuse it
+            System.out.println("Found EXISTING session (ID: " + sessionObject.getId() + ") between " + player1Name + " and " + player2Name);
+            System.out.println("Current scores - " + player1Name + ": " + sessionObject.getPlayer1Score() + ", " + player2Name + ": " + sessionObject.getPlayer2Score());
         }
+
+        // Determine who is X and who is O based on session player order
+        ClientHandler xPlayer, oPlayer;
+        if (sessionObject.getPlayer1Id() == player1Id) {
+            // p1 is Player1 in session (X)
+            xPlayer = p1;
+            oPlayer = p2;
+        } else {
+            // p1 is Player2 in session (O), p2 is Player1 (X)
+            xPlayer = p2;
+            oPlayer = p1;
+        }
+
+        // Create the Session object with the session data
+        Session session = new Session(xPlayer, oPlayer, this, sessionObject);
+        playersInSessionCount += 2;
+
+        sessions.put(p1, session);
+        sessions.put(p2, session);
+
+        xPlayer.send("GAME_START X");
+        oPlayer.send("GAME_START O");
 
         return sessionObject;
     }

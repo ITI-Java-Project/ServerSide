@@ -20,6 +20,9 @@ public class PlayerDao {
 
     private static final String GET_ALL_PLAYERS_QUERY = "SELECT * FROM PLAYER ORDER BY SCORE DESC";
 
+    private static final String INCREASE_WINNER_SCORE
+            = "UPDATE PLAYER SET SCORE = SCORE + 1 WHERE ID = ?";
+
     public static PlayerDto register(
             String name,
             String email,
@@ -102,12 +105,17 @@ public class PlayerDao {
     }
 
     public static boolean increaseWinnerScore(int playerId) {
-        String query
-                = "UPDATE PLAYER "
-                + "SET SCORE = SCORE + 1 "
-                + "WHERE ID = " + playerId;
-
-        return DbManager.init().updateQuery(query);
+        System.out.println("Increasing score for player ID: " + playerId);
+        
+        boolean result = DbManager.init().updateQueryPrepared(INCREASE_WINNER_SCORE, playerId);
+        
+        if (result) {
+            System.out.println("Player ID " + playerId + " score increased successfully");
+        } else {
+            System.err.println("Failed to increase score for player ID " + playerId);
+        }
+        
+        return result;
     }
 
 }

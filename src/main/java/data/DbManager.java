@@ -101,29 +101,51 @@ public class DbManager {
     }
 
     public int insertAndGetId(String query, Object... params) {
+        PreparedStatement ps = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        
         try {
-            // 1 insert
-            try (PreparedStatement ps = conn.prepareStatement(query)) {
-                for (int i = 0; i < params.length; i++) {
-                    ps.setObject(i + 1, params[i]);
-                }
-                ps.executeUpdate();
+            // 1. Prepare and execute insert with parameters
+            ps = conn.prepareStatement(query);
+            for (int i = 0; i < params.length; i++) {
+                ps.setObject(i + 1, params[i]);
+            }
+            
+            int rowsAffected = ps.executeUpdate();
+            System.out.println("Insert affected rows: " + rowsAffected);
+            
+            if (rowsAffected == 0) {
+                System.err.println("Insert failed - no rows affected");
+                return -1;
             }
 
-            // 2 get last generated ID (Derby way)
-            try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(
-                    "SELECT IDENTITY_VAL_LOCAL()"
-            )) {
+            // 2. Get last generated ID (Derby way)
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SELECT IDENTITY_VAL_LOCAL() FROM SYSIBM.SYSDUMMY1");
 
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
+            if (rs.next()) {
+                int id = rs.getInt(1);
+                System.out.println("Generated ID: " + id);
+                return id;
+            } else {
+                System.err.println("Could not retrieve generated ID");
+                return -1;
             }
 
         } catch (SQLException e) {
+            System.err.println("Error in insertAndGetId: " + e.getMessage());
             e.printStackTrace();
+            return -1;
+        } finally {
+            // Close resources in reverse order
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (ps != null) ps.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
-        return -1;
     }
-
 }

@@ -8,25 +8,20 @@ CREATE TABLE PLAYER (
     PRIMARY KEY (ID)
 );
 
+-- Recreate the SESSION table with correct uppercase column names
 CREATE TABLE SESSION (
     ID INT NOT NULL GENERATED ALWAYS AS IDENTITY,
-
-    Player1ID INT NOT NULL,
-    Player2ID INT NOT NULL,
-
-    Player1Name VARCHAR(100),
-    Player2Name VARCHAR(100),
-
-    Player1Score INT,
-    Player2Score INT,
-
+    PLAYER1ID INT NOT NULL,
+    PLAYER2ID INT NOT NULL,
+    PLAYER1NAME VARCHAR(100),
+    PLAYER2NAME VARCHAR(100),
+    PLAYER1SCORE INT,
+    PLAYER2SCORE INT,
     PRIMARY KEY (ID),
-
     CONSTRAINT fk_player1
-        FOREIGN KEY (Player1ID)
+        FOREIGN KEY (PLAYER1ID)
         REFERENCES PLAYER(ID),
-
     CONSTRAINT fk_player2
-        FOREIGN KEY (Player2ID)
+        FOREIGN KEY (PLAYER2ID)
         REFERENCES PLAYER(ID)
 );
